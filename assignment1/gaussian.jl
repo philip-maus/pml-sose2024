@@ -13,10 +13,11 @@ Should contain two variables:
 tau and rho, both Floats, to store the natural parameters of the gaussian.
 """
 struct Gaussian1D
-    ##TODO##
+    tau::Float64
+    rho::Float64
 
     # default constructor
-    Gaussian1D(tau, rho) = ##TODO##
+    Gaussian1D(tau, rho) = rho >= 0 ? new(tau, rho) : error("precision should not be less than 0")
 end
 # Initializes a standard Gaussian 
 Gaussian1D() = Gaussian1D(0, 1)
@@ -26,7 +27,7 @@ Gaussian1D() = Gaussian1D(0, 1)
 
 Initializes a Gaussian from mean and variance.
 """
-Gaussian1DFromMeanVariance(μ, σ2) = ##TODO##
+Gaussian1DFromMeanVariance(μ, σ2) = Gaussian1D(μ * sqrt(σ2), sqrt(σ2))
 
 """
     mean(g)
@@ -40,7 +41,7 @@ julia> mean(Gaussian1DFromMeanVariance(1,2))
 1.0
 ```
 """
-mean(g::Gaussian1D) = ##TODO##
+mean(g::Gaussian1D) = g.tau / g.rho
 
 """
     variance(g)
