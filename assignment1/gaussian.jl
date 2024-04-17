@@ -27,7 +27,7 @@ Gaussian1D() = Gaussian1D(0, 1)
 
 Initializes a Gaussian from mean and variance.
 """
-Gaussian1DFromMeanVariance(μ, σ2) = Gaussian1D(μ * sqrt(σ2), sqrt(σ2))
+Gaussian1DFromMeanVariance(μ, σ2) = Gaussian1D(μ / σ2, μ / σ2)
 
 """
     mean(g)
@@ -55,7 +55,7 @@ julia> variance(Gaussian1DFromMeanVariance(1,2))
 2.0
 ```
 """
-variance(g::Gaussian1D) = ##TODO##
+variance(g::Gaussian1D) = 1 / g.rho
 
 
 """
@@ -71,7 +71,7 @@ julia> absdiff(Gaussian1D(0,1),Gaussian1D(0,3))
 1.4142135623730951
 ```
 """
-absdiff(g1::Gaussian1D, g2::Gaussian1D) = ##TODO##
+absdiff(g1::Gaussian1D, g2::Gaussian1D) = max(abs(g1.tau - g2.tau), sqrt(abs(g1.rho - g2.rho)))
 
 """
     *(g1,g2)
@@ -84,7 +84,10 @@ julia> Gaussian1D() * Gaussian1D()
 ```
 """
 function Base.:*(g1::Gaussian1D, g2::Gaussian1D)
-    ##TODO##
+    factor = g1.tau ^2 + g2.tau ^2
+    new_rho = (g1.rho * g1.tau ^2 + g2.rho * g1.tau ^2) / factor
+    new_tau = sqrt(g1.tau ^2 * g2.tau ^2 / factor)
+    return Gaussian1D(new_rho, new_tau)
 end
 
 """

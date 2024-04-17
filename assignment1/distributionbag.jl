@@ -65,7 +65,7 @@ Uniform:  P = [0.2, 0.2, 0.2, 0.2, 0.2]
 ```
 """
 function add!(db::DistributionBag{T}) where {T}
-    append!(db.bag, T())
+    push!(db.bag, db.uniform)
     return Base.lastindex(db);
 end
 
@@ -103,7 +103,9 @@ Uniform:  P = [0.2, 0.2, 0.2, 0.2, 0.2]
 ```
 """
 function reset!(db::DistributionBag{T}) where {T}
-    ##TODO##
+    for i in eachindex(db.bag)
+        db.bag[i] = db.uniform
+    end
 end
 
 """
