@@ -84,10 +84,7 @@ julia> Gaussian1D() * Gaussian1D()
 ```
 """
 function Base.:*(g1::Gaussian1D, g2::Gaussian1D)
-    factor = g1.tau ^2 + g2.tau ^2
-    new_rho = (g1.rho * g1.tau ^2 + g2.rho * g1.tau ^2) / factor
-    new_tau = sqrt(g1.tau ^2 * g2.tau ^2 / factor)
-    return Gaussian1D(new_rho, new_tau)
+    return Gaussian1D(g1.tau + g2.tau, g1.rho + g2.rho)
 end
 
 """
@@ -101,7 +98,7 @@ julia> Gaussian1D(0,1) / Gaussian1D(0,0.5)
 ```
 """
 function Base.:/(g1::Gaussian1D, g2::Gaussian1D)
-    ##TODO##
+    return Gaussian1D(g1.tau - g2.tau, g1.rho - g2.rho)
 end
 
 """
@@ -117,7 +114,13 @@ c = 0.28209479177387814
 ```
 """
 function logNormProduct(g1::Gaussian1D, g2::Gaussian1D)
-    ##TODO##
+    if (g1.rho == g2.rho == 0.0)
+        return 0.0;
+    end
+    x = mean(g1)
+    m = mean(g2)
+    v = variance(g1) + variance(g2)
+    return log(1/sqrt(2 * π * v) * exp(-(x-m)^2/(2*v)))
 end
 
 """
@@ -125,7 +128,7 @@ end
 
 Computes the log-normalization constant of a division of `g1` with `g2` (the end of the equation ;))
 
-It should be 0 if both rho variables are 0.
+✅ It should be 0 if both rho variables are 0.
 # Examples
 ```julia-repl
 julia> logNormRatio(Gaussian1D(0,1) / Gaussian1D(0,0.5))
@@ -133,7 +136,13 @@ julia> logNormRatio(Gaussian1D(0,1) / Gaussian1D(0,0.5))
 ```
 """
 function logNormRatio(g1::Gaussian1D, g2::Gaussian1D)
-    ##TODO##
+    if (g1.rho == g2.rho) # or else division by zero
+        return 0.0;
+    end
+    x = (g1.tau - g2.tau) / (g1.rho - g2.rho)
+    m = g2.tau / g2.rho
+    v = 1 / (g1.rho - g2.rho) +  1 / g2.rho
+    return log(1/(1/sqrt(2 * π * v) * exp(-(x-m)^2/(2*v))))
 end
 
 """
